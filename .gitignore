@@ -1,0 +1,46 @@
+# ---- Secrets / environment ----
+.env
+.env.*
+!.env.example
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+*.dll
+build/
+dist/
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# ---- C++ / CMake build output ----
+build_cpp/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+.ninja_*
+
+# ---- Local scratch dirs ----
+.tmp/
+.tmp2/
+
+# ---- Local tooling ----
+.claude/
+
+# ---- Internal development docs (not part of the public repo) ----
+DELIVERY_CHECKLIST.md
+IMPLEMENTATION_SUMMARY.md
+运行simple_demo.txt
+运行test_rag_workflow.txt
+
+# ---- IDE ----
+.vscode/
+.idea/
+*.swp

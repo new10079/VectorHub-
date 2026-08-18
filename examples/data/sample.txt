@@ -1,0 +1,38 @@
+VectorHub is a lightweight, hybrid Python and C++ vector database engine.
+Its core is an efficient HNSW (Hierarchical Navigable Small World) graph
+index paired with fast vector similarity search. The project targets three
+main use cases: retrieval-augmented generation (RAG) applications,
+recommendation systems, and semantic search.
+
+The positioning of VectorHub is simple: it aims to be lighter than Milvus
+and easier to use than Faiss. The C++ layer handles performance-critical
+work such as HNSW graph construction, distance computation (L2 and cosine),
+and memory management. The Python layer wraps this core in a friendly,
+extensible API so application developers rarely need to touch C++ directly.
+
+VectorHub's Phase 1 delivered the MVP: a working HNSW index exposed through
+pybind11 bindings, a VectorCollection Python class with add() and search()
+methods, and a basic demo showing text embeddings being indexed and queried.
+
+Phase 2 extended VectorHub toward production readiness. It added true HNSW
+graph search with tunable parameters (M, ef_construction, ef_search), cosine
+distance in addition to L2, persistence via save() and load(), a metadata
+store so arbitrary key-value pairs can be attached to each vector, equality
+filtering during search, delete() and update() operations, and a benchmark
+script comparing HNSW against brute-force search for recall and latency.
+
+Phase 3 focuses on demonstrating a real-world application: a
+retrieval-augmented generation (RAG) pipeline. The workflow loads a source
+document, splits it into overlapping text chunks, embeds each chunk with a
+sentence-transformers model, indexes the embeddings in a VectorCollection
+together with metadata (source file, chunk id, and the original text), and
+then answers a user's question by retrieving the most relevant chunks and
+composing a final answer. Two answer-generation modes are supported: a mock
+mode that requires no external API and simply summarizes the retrieved
+context, and an OpenAI mode that calls a real large language model when an
+API key is available.
+
+Because VectorHub keeps the entire index in memory and is single-threaded,
+it is best suited for small to medium-sized collections such as a single
+project's documentation, a handful of PDFs, or a prototype recommendation
+dataset -- not for web-scale deployments.

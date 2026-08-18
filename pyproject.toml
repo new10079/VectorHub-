@@ -1,0 +1,21 @@
+[build-system]
+requires = ["scikit-build-core>=0.3", "pybind11>=2.10"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "vectorhub"
+version = "0.2.0"
+description = "Lightweight vector database with HNSW indexing"
+requires-python = ">=3.8"
+dependencies = ["numpy>=1.19.0"]
+
+[project.optional-dependencies]
+rag = ["sentence-transformers>=2.2.0"]
+pdf = ["pypdf>=3.0.0"]
+openai = ["openai>=1.0.0"]
+deepseek = ["langchain-deepseek>=0.1.0", "langchain-core>=0.3.0"]
+dotenv = ["python-dotenv>=1.0.0"]
+
+[tool.scikit-build]
+cmake.build-type = "Release"
+wheel.packages = ["vectorhub"]
