@@ -23,21 +23,64 @@
 
 ## 安装
 
-### 环境要求
+### 1. 创建虚拟环境（推荐）
 
-- Python 3.8+
-- CMake 3.15+（`pip install cmake`）
-- g++ 7+（Windows 上使用 MSYS2/ucrt64，Linux/macOS 上使用 GCC/Clang）
-- pybind11、ninja（`pip install pybind11 ninja`）
-- NumPy
-- 首次配置时需要网络访问，用于获取 [xsimd](https://github.com/xtensor-stack/xsimd)（仅头文件的 SIMD 库，通过 CMake `FetchContent` 自动拉取，无需额外安装步骤）
+```bash
+# Windows (PowerShell)
+python -m venv .venv
+.venv\Scripts\activate
 
-### 构建
+# Linux / macOS
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+> 虚拟环境可以把本项目的依赖与系统 Python 隔离，是使用 VectorHub 的推荐方式。
+
+### 2. 安装依赖
+
+```bash
+pip install -r requirements.txt
+```
+
+这会安装构建工具链（CMake、Ninja、pybind11、scikit-build-core）、核心运行时
+（NumPy）和 pytest。RAG 演示的可选依赖可随后安装：
+
+```bash
+pip install -e ".[rag,pdf,openai,deepseek,dotenv]"
+```
+
+> **中国大陆网络提示**：部分网络环境下 PyPI 和 GitHub 可能无法访问。如果
+> `pip install` 超时，请使用镜像源，例如：
+> `pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple`
+
+### 3. 安装项目（自动构建 C++ 扩展）
+
+```bash
+pip install -e .
+```
+
+`scikit-build-core` 会自动调用 CMake 构建，因此需要确保 `cmake`、`ninja` 和
+C++17 编译器（Windows 上用 g++ 7+ / MSYS2 ucrt64，Linux/macOS 上用 GCC/Clang）
+已在 `PATH` 中。首次配置时会自动下载
+[xsimd](https://github.com/xtensor-stack/xsimd)（仅头文件的 SIMD 库，通过 CMake
+`FetchContent` 拉取，之后会缓存复用）。
+
+### 4. 验证安装
+
+```bash
+python -c "from vectorhub import VectorCollection; print('OK')"
+python examples/simple_demo.py
+pytest
+```
+
+### 手动构建（可选）
+
+如果不想让 `pip install -e .` 自动构建，也可以手动编译 C++ 扩展：
 
 ```bash
 pip install cmake pybind11 ninja scikit-build-core numpy pytest
 
-# 构建 C++ 扩展
 mkdir build_cpp && cd build_cpp
 cmake .. -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
@@ -46,23 +89,13 @@ cmake .. -G Ninja \
 cmake --build . --config Release
 cd ..
 
-# 将 .pyd 复制到包中
+# 将编译好的扩展复制到包中
 cp build_cpp/_vectorhub*.pyd vectorhub/
 
 # Windows 上使用 MSYS2 时，还需复制运行时 DLL：
 # cp D:/msys2/ucrt64/bin/libgcc_s_seh-1.dll vectorhub/
 # cp D:/msys2/ucrt64/bin/libwinpthread-1.dll vectorhub/
 # cp D:/msys2/ucrt64/bin/libstdc++-6.dll     vectorhub/
-
-pip install -e .
-```
-
-### 验证安装
-
-```bash
-python -c "from vectorhub import VectorCollection; print('OK')"
-python examples/simple_demo.py
-pytest
 ```
 
 ## 快速开始
@@ -324,7 +357,9 @@ VectorHub/
 │   └── data/
 │       └── sample.txt             # RAG 演示使用的示例文档
 ├── CMakeLists.txt
-└── pyproject.toml
+├── LICENSE
+├── pyproject.toml
+└── requirements.txt
 ```
 
 ## 当前限制

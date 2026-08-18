@@ -26,21 +26,67 @@ Phase 1/2 API.
 
 ## Installation
 
-### Requirements
+### 1. Create a virtual environment (recommended)
 
-- Python 3.8+
-- CMake 3.15+ (`pip install cmake`)
-- g++ 7+ (MSYS2/ucrt64 on Windows, GCC/Clang on Linux/macOS)
-- pybind11, ninja (`pip install pybind11 ninja`)
-- NumPy
-- Network access on first configure, to fetch [xsimd](https://github.com/xtensor-stack/xsimd) (header-only SIMD library, pulled in automatically via CMake `FetchContent`; no extra install step)
+```bash
+# Windows (PowerShell)
+python -m venv .venv
+.venv\Scripts\activate
 
-### Build
+# Linux / macOS
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+> A virtual environment keeps this project's dependencies isolated from your
+> system Python — this is the recommended way to use VectorHub.
+
+### 2. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+This installs the build toolchain (CMake, Ninja, pybind11, scikit-build-core), the
+core runtime (NumPy) and pytest. Optional extras for the RAG demo can be added
+afterwards:
+
+```bash
+pip install -e ".[rag,pdf,openai,deepseek,dotenv]"
+```
+
+> **Mainland China network note**: PyPI and GitHub can be unreachable from some
+> networks. If `pip install` times out, use a mirror, e.g.:
+> `pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple`
+
+### 3. Install the package (builds the C++ extension)
+
+```bash
+pip install -e .
+```
+
+`scikit-build-core` runs CMake for you, so `cmake`, `ninja` and a C++17 compiler
+(`g++` 7+ / MSYS2 ucrt64 on Windows, GCC/Clang on Linux/macOS) must be on your
+`PATH`. The first configure downloads
+[xsimd](https://github.com/xtensor-stack/xsimd) (header-only SIMD library, fetched
+automatically via CMake `FetchContent` and cached for later builds).
+
+### 4. Verify
+
+```bash
+python -c "from vectorhub import VectorCollection; print('OK')"
+python examples/simple_demo.py
+pytest
+```
+
+### Manual build (optional)
+
+Prefer to compile the C++ extension yourself instead of letting
+`pip install -e .` do it?
 
 ```bash
 pip install cmake pybind11 ninja scikit-build-core numpy pytest
 
-# Build the C++ extension
 mkdir build_cpp && cd build_cpp
 cmake .. -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
@@ -49,23 +95,13 @@ cmake .. -G Ninja \
 cmake --build . --config Release
 cd ..
 
-# Copy .pyd into the package
+# Copy the compiled extension into the package
 cp build_cpp/_vectorhub*.pyd vectorhub/
 
-# On Windows with MSYS2, also copy runtime DLLs:
+# On Windows with MSYS2, also copy the runtime DLLs:
 # cp D:/msys2/ucrt64/bin/libgcc_s_seh-1.dll vectorhub/
 # cp D:/msys2/ucrt64/bin/libwinpthread-1.dll vectorhub/
 # cp D:/msys2/ucrt64/bin/libstdc++-6.dll     vectorhub/
-
-pip install -e .
-```
-
-### Verify
-
-```bash
-python -c "from vectorhub import VectorCollection; print('OK')"
-python examples/simple_demo.py
-pytest
 ```
 
 ## Quick Start
@@ -368,7 +404,9 @@ VectorHub/
 │   └── data/
 │       └── sample.txt             # sample document for the RAG demo
 ├── CMakeLists.txt
-└── pyproject.toml
+├── LICENSE
+├── pyproject.toml
+└── requirements.txt
 ```
 
 ## Current Limitations
