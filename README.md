@@ -1,3 +1,5 @@
+[English](README.md) | [简体中文](README.zh-CN.md)
+
 # VectorHub — Lightweight Vector Database
 
 A lightweight Python + C++ hybrid vector database with HNSW indexing.

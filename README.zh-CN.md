@@ -1,3 +1,5 @@
+[English](README.md) | [简体中文](README.zh-CN.md)
+
 # VectorHub — 轻量级向量数据库
 
 一个轻量级的 Python + C++ 混合向量数据库，支持 HNSW 索引。
